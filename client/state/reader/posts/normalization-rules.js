@@ -2,7 +2,6 @@
  * External Dependencies
  */
 import { filter, find, flow, forEach } from 'lodash';
-import url from 'url';
 
 /**
  * Internal Dependencies
@@ -36,7 +35,7 @@ import removeElementsBySelector from 'lib/post-normalizer/rule-content-remove-el
 /**
  * Module vars
  */
-const
+export const
 	READER_CONTENT_WIDTH = 720,
 	DISCOVER_FULL_BLEED_WIDTH = 1082,
 	PHOTO_ONLY_MIN_WIDTH = 480,
@@ -106,15 +105,6 @@ function classifyPost( post ) {
 				displayType ^= DISPLAY_TYPES.THUMBNAIL;
 			}
 		}
-
-		const canonicalImageUrl = url.parse( canonicalImage.uri, true, true ),
-			canonicalImagePath = canonicalImageUrl.pathname;
-		if ( find( post.content_images, ( img ) => {
-			const imgUrl = url.parse( img.src, true, true );
-			return imgUrl.pathname === canonicalImagePath;
-		} ) ) {
-			displayType ^= DISPLAY_TYPES.CANONICAL_IN_CONTENT;
-		}
 	}
 
 	if ( post.canonical_media && post.canonical_media.mediaType === 'video' ) {
@@ -145,11 +135,11 @@ const fastPostNormalizationRules = flow( [
 		removeStyles,
 		removeElementsBySelector,
 		makeImagesSafe(),
-		discoverFullBleedImages,
 		makeEmbedsSafe,
 		disableAutoPlayOnEmbeds,
 		disableAutoPlayOnMedia,
 		detectMedia,
+		discoverFullBleedImages,
 		detectPolls,
 	] ),
 	createBetterExcerpt,
