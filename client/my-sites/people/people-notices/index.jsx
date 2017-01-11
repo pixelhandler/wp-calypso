@@ -4,6 +4,7 @@
 import React from 'react';
 import i18n from 'i18n-calypso';
 import { connect } from 'react-redux';
+import { get } from 'lodash';
 
 /**
  * Internal dependencies
@@ -11,7 +12,7 @@ import { connect } from 'react-redux';
 import PeopleLog from 'lib/people/log-store';
 import PeopleActions from 'lib/people/actions';
 import Notice from 'components/notice';
-import { getSelectedSite } from 'state/ui/selectors';
+import { getSelectedSite, getSelectedSiteId } from 'state/ui/selectors';
 
 const isSameSite = ( siteId, log ) => siteId && log.siteId && log.siteId === siteId;
 
@@ -55,15 +56,27 @@ const PeopleNotices = React.createClass( {
 		PeopleLog.removeListener( 'change', this.refreshNotices );
 	},
 
+	componentWillReceiveProps( nextProps ) {
+		const currentUserId = get( this.props, 'user.id', null );
+		const nextUserId = get( nextProps, 'user.id', null );
+
+		if ( this.props.selectedSiteId !== nextProps.selectedSiteId ||
+			currentUserId !== nextUserId
+		) {
+			this.setState( this.getState() );
+		}
+	},
+
 	getState() {
-		const siteId = this.props.site.ID,
-			userId = this.props.user && this.props.user.ID;
+		const { selectedSiteId: siteId, user } = this.props;
+		const userId = get( user, 'id', null );
 
 		return {
 			errors: PeopleLog.getErrors( filterBy.bind( this, siteId, userId ) ),
 			inProgress: PeopleLog.getInProgress( filterBy.bind( this, siteId, userId ) ),
 			completed: PeopleLog.getCompleted( filterBy.bind( this, siteId, userId ) )
 		};
+
 	},
 
 	refreshNotices() {
@@ -219,7 +232,8 @@ const PeopleNotices = React.createClass( {
 export default connect(
 	state => {
 		return {
-			site: getSelectedSite( state )
+			site: getSelectedSite( state ),
+			getSelectedSiteId: getSelectedSiteId( state )
 		};
 	}
 )( PeopleNotices );
