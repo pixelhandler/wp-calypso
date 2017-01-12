@@ -11,13 +11,11 @@ import { connect } from 'react-redux';
 import SectionHeader from 'components/section-header';
 import Card from 'components/card';
 import Button from 'components/button';
-import FormSelect from 'components/forms/form-select';
-import FormLabel from 'components/forms/form-label';
-import FormCheckbox from 'components/forms/form-checkbox';
 import JetpackModuleToggle from '../jetpack-module-toggle';
 import FormFieldset from 'components/forms/form-fieldset';
 import InfoPopover from 'components/info-popover';
 import ExternalLink from 'components/external-link';
+import CarouselSettings from './carousel-settings';
 import { protectForm } from 'lib/protect-form';
 
 import {
@@ -43,15 +41,16 @@ class MediaSettings extends Component {
 		} );
 	}
 
-	handleCarouselDisplayExif = ( event ) => {
+	handleCheckbox = ( event ) => {
 		this.setState( {
-			carousel_display_exif: event.target.checked
+			[ event.target.name ]: event.target.checked
 		} );
 		this.props.markChanged();
 	}
-	handleCarouselBackgroundColor = ( event ) => {
+
+	handleSelect = ( event ) => {
 		this.setState( {
-			carousel_background_color: event.target.value
+			[ event.target.name ]: event.target.value
 		} );
 		this.props.markChanged();
 	}
@@ -82,7 +81,7 @@ class MediaSettings extends Component {
 					<FormFieldset>
 						<div className="media-settings__info-link-container">
 							<InfoPopover position={ 'left' }>
-								<ExternalLink icon={ true } href={ 'https://jetpack.com/support/photon' } >
+								<ExternalLink target="_blank" icon={ true } href={ 'https://jetpack.com/support/photon' } >
 									{ props.translate( 'Learn more about Photon' ) }
 								</ExternalLink>
 							</InfoPopover>
@@ -94,10 +93,10 @@ class MediaSettings extends Component {
 							description="Enabling Photon is required to use Tiled Galleries."
 							/>
 					</FormFieldset>
-					<FormFieldset className="has-divider is-top-only">
+					<FormFieldset className="media-settings__formfieldset has-divider is-top-only">
 						<div className="media-settings__info-link-container">
 							<InfoPopover position={ 'left' }>
-								<ExternalLink icon={ true } href={ 'https://jetpack.com/support/carousel' } >
+								<ExternalLink target="_blank" icon={ true } href={ 'https://jetpack.com/support/carousel' } >
 									{ props.translate( 'Learn more about Carousel' ) }
 								</ExternalLink>
 							</InfoPopover>
@@ -108,34 +107,15 @@ class MediaSettings extends Component {
 							label={ props.translate( 'Transform image galleries into full screen slideshows.' ) }
 							/>
 						{
-							( props.carouselActive && (
-								<div className="media-settings__module-settings is-indented">
-									<FormLabel>
-										<FormCheckbox
-											checked={ this.state.carousel_display_exif }
-											onChange={ this.handleCarouselDisplayExif }
-											disabled={ props.submittingForm }
-											name="carousel_display_exif" />
-										<span>{ props.translate( 'Show photo metadata (Exif) in carousel, when available' ) }</span>
-									</FormLabel>
-									<FormLabel htmlFor="carousel_background_color">
-										{ props.translate( 'Background color' ) }
-									</FormLabel>
-									<FormSelect
-										value={ this.state.carousel_background_color }
-										onChange={ this.handleCarouselBackgroundColor }
-										disabled={ props.submittingForm }
-										name="carousel_background_color"
-										id="carousel_background_color" >
-										<option value={ 'black' } key={ 'carousel_background_color_black' }>
-											{ props.translate( 'Black' ) }
-										</option>
-										<option value={ 'white' } key={ 'carousel_background_color_white' }>
-											{ props.translate( 'White' ) }
-										</option>
-									</FormSelect>
-								</div>
-							) )
+							props.carouselActive && (
+								<CarouselSettings
+									carousel_display_exif={ this.state.carousel_display_exif }
+									carousel_background_color={ this.state.carousel_background_color }
+									submittingForm={ props.submittingForm }
+									handleCheckbox={ this.handleCheckbox }
+									handleSelect={ this.handleSelect }
+									translate={ props.translate } />
+							)
 						}
 					</FormFieldset>
 				</Card>
@@ -156,7 +136,6 @@ const mapStateToProps = ( state, ownProps ) => {
 		submittingForm: !! isUpdatingJetpackSettings( state, ownProps.site.ID ),
 		isRequestingJetpackSettings: isRequestingJetpackSettings( state, ownProps.site.ID ) || false,
 		carouselActive: !! getJetpackSetting( state, ownProps.site.ID, 'carousel' ),
-		photonActive: !! getJetpackSetting( state, ownProps.site.ID, 'photon' ),
 		carousel_background_color: getJetpackSetting( state, ownProps.site.ID, 'carousel_background_color' ),
 		carousel_display_exif: getJetpackSetting( state, ownProps.site.ID, 'carousel_display_exif' )
 	};
