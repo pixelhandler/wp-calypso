@@ -3,6 +3,7 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { localize, moment } from 'i18n-calypso';
+import trim from 'lodash/trim';
 
 /**
  * Internal dependencies
@@ -99,6 +100,8 @@ class PostScheduleClock extends Component {
 
 		let diffInMinutes, tzDateOffset;
 
+		const localOffset = date.format( 'Z ' );
+
 		if ( timezone ) {
 			const tzDate = date.clone().tz( timezone );
 			tzDateOffset = tzDate.format( 'Z' );
@@ -131,8 +134,11 @@ class PostScheduleClock extends Component {
 			<span>
 				<div className="post-schedule__clock-timezone">
 					{
-						translate( 'This site timezone is %(diff)sh from your local timezone.', {
-							args: { diff: convertMinutesToHHMM( diffInMinutes ) }
+						translate( 'This site timezone is %(diff)sh from your local timezone (%(localOffset)s).', {
+							args: {
+								diff: convertMinutesToHHMM( diffInMinutes ),
+								localOffset: trim( localOffset )
+							},
 						} )
 					}
 
