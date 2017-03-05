@@ -350,6 +350,7 @@ export const normalizers = {
 	},
 
 	statsComments( data, query, siteId, site ) {
+		//debugger;
 		if ( ! data ) {
 			return null;
 		}

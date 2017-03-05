@@ -127,6 +127,7 @@ module.exports = {
 		analytics.pageView.record( basePath, analyticsPageTitle + ' > Insights' );
 
 		const props = { followList };
+		//debugger;
 		renderWithReduxStore(
 			<AsyncLoad require="my-sites/stats/stats-insights" placeholder={ <StatsPagePlaceholder /> } { ...props } />,
 			document.getElementById( 'primary' ),

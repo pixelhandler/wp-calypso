@@ -33,6 +33,7 @@ class StatsComments extends Component {
 		siteSlug: PropTypes.string
 	};
 
+	// TODO REVIEW, change to recent comments?
 	state = {
 		activeFilter: 'top-authors'
 	};
@@ -43,7 +44,9 @@ class StatsComments extends Component {
 			return;
 		}
 		let gaEvent;
+		//debugger;
 		switch ( filter ) {
+			// case 'recent-comments' ?
 			case 'top-authors':
 				gaEvent = 'Clicked By Authors Comments Toggle';
 				break;
@@ -82,6 +85,7 @@ class StatsComments extends Component {
 	}
 
 	renderSummary() {
+		// TODO REVIEW change 'authors' to 'recent-posts' ?
 		const data = get( this.props.commentsStatsData, 'authors' );
 		if ( ! data || ! data.monthly_comments ) {
 			return null;
@@ -105,9 +109,13 @@ class StatsComments extends Component {
 			translate
 		} = this.props;
 		const commentsAuthors = get( commentsStatsData, 'authors' );
+		// TODO REVIEW, does the posts comment include page comments?
+		// exclude postback / ping comments?
 		const commentsPosts = get( commentsStatsData, 'posts' );
 		const noData = ! commentsAuthors;
 		const selectOptions = [
+			// value 'recent-commments', label: translate( 'Recent
+			// Comments on Posts & Pages' ) },
 			{ value: 'top-authors', label: translate( 'Comments By Authors' ) },
 			{ value: 'top-content', label: translate( 'Comments By Posts & Pages' ) }
 		];
@@ -172,6 +180,7 @@ const connectComponent = connect(
 
 		return {
 			commentFollowersTotal: get( getSiteStatsNormalizedData( state, siteId, 'statsCommentFollowers', { max: 7 } ), 'total' ),
+			// TODO REVIEW, need to figure out how data can be setup for recent-comments
 			commentsStatsData: getSiteStatsNormalizedData( state, siteId, 'statsComments', {} ),
 			hasCommentsStatsQueryFailed: hasSiteStatsQueryFailed( state, siteId, 'statsComments', {} ),
 			requestingCommentsStats: isRequestingSiteStatsForQuery( state, siteId, 'statsComments', {} ),
